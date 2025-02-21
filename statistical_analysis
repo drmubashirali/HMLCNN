@@ -1,0 +1,116 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the dataset
+file_path = 'Hb_PPG.csv'  # Update this to your file path
+dataset = pd.read_csv(file_path)
+
+# Descriptive statistics
+descriptive_stats = dataset.describe()
+
+# Correlation analysis
+correlation_matrix = dataset.corr(numeric_only=True)
+
+# Plotting distributions
+plt.figure(figsize=(16, 12))
+
+# Histogram for Hemoglobin values
+plt.subplot(2, 2, 1)
+sns.histplot(dataset['Hemoglobin (g/dL)'], kde=True)
+plt.title('Distribution of Hemoglobin Values')
+plt.xlabel('Hemoglobin (g/dL)')
+plt.ylabel('Frequency')
+
+# Histogram for Age
+plt.subplot(2, 2, 2)
+sns.histplot(dataset['Age (year)'], kde=True)
+plt.title('Distribution of Age')
+plt.xlabel('Age (year)')
+plt.ylabel('Frequency')
+
+# Scatter plot for Red vs Hemoglobin
+plt.subplot(2, 2, 3)
+sns.scatterplot(x=dataset['Red (a.u)'], y=dataset['Hemoglobin (g/dL)'], hue=dataset['Gender'])
+plt.title('Red Light Signal vs Hemoglobin')
+plt.xlabel('Red Light Signal (a.u)')
+plt.ylabel('Hemoglobin (g/dL)')
+
+# Scatter plot for Infra Red vs Hemoglobin
+plt.subplot(2, 2, 4)
+sns.scatterplot(x=dataset['Infra Red (a.u)'], y=dataset['Hemoglobin (g/dL)'], hue=dataset['Gender'])
+plt.title('Infra Red Light Signal vs Hemoglobin')
+plt.xlabel('Infra Red Light Signal (a.u)')
+plt.ylabel('Hemoglobin (g/dL)')
+
+plt.tight_layout()
+plt.show()
+
+# Display correlation matrix
+plt.figure(figsize=(10, 8))
+sns.heatmap(correlation_matrix, annot=True, cmap='coolwarm', fmt='.2f')
+plt.title('Correlation Matrix')
+plt.show()
+
+# Pair plot to visualize relationships between all variables
+sns.pairplot(dataset, hue='Gender', diag_kind='kde')
+plt.suptitle('Pair Plot of Variables', y=1.02)
+plt.show()
+
+# Detailed correlation insights
+print("Correlation Matrix:\n", correlation_matrix)
+
+# Analysis of specific correlations
+correlation_red_hb = dataset['Red (a.u)'].corr(dataset['Hemoglobin (g/dL)'])
+correlation_ir_hb = dataset['Infra Red (a.u)'].corr(dataset['Hemoglobin (g/dL)'])
+correlation_age_hb = dataset['Age (year)'].corr(dataset['Hemoglobin (g/dL)'])
+
+print(f"Correlation between Red Light Signal and Hemoglobin: {correlation_red_hb:.2f}")
+print(f"Correlation between Infra Red Light Signal and Hemoglobin: {correlation_ir_hb:.2f}")
+print(f"Correlation between Age and Hemoglobin: {correlation_age_hb:.2f}")
+
+# Visualization of specific correlations
+plt.figure(figsize=(14, 6))
+
+# Red Light Signal vs Hemoglobin
+plt.subplot(1, 2, 1)
+sns.regplot(x=dataset['Red (a.u)'], y=dataset['Hemoglobin (g/dL)'])
+plt.title('Red Light Signal vs Hemoglobin')
+plt.xlabel('Red Light Signal (a.u)')
+plt.ylabel('Hemoglobin (g/dL)')
+
+# Infra Red Light Signal vs Hemoglobin
+plt.subplot(1, 2, 2)
+sns.regplot(x=dataset['Infra Red (a.u)'], y=dataset['Hemoglobin (g/dL)'])
+plt.title('Infra Red Light Signal vs Hemoglobin')
+plt.xlabel('Infra Red Light Signal (a.u)')
+plt.ylabel('Hemoglobin (g/dL)')
+plt.tight_layout()
+plt.show()
+
+# Set Times New Roman as the font
+plt.rcParams["font.family"] = "Times New Roman"
+
+# Plotting Gender-based Hemoglobin Distribution
+plt.figure(figsize=(14, 6))
+
+plt.subplot(1, 2, 1)
+sns.kdeplot(data=dataset, x='Hemoglobin (g/dL)', hue='Gender', fill=True, common_norm=False, alpha=0.5, 
+            palette={'Male': 'blue', 'Female': 'orange'})
+#plt.title('Gender-based Hemoglobin Distribution')
+plt.xlabel('Hemoglobin (g/dL)', fontsize=22)  # Set x-axis label size
+plt.ylabel('Density', fontsize=22)  # Set y-axis label size
+plt.tick_params(axis='both', which='major', labelsize=20)  # Increase tick label size
+
+# Plotting Gender-based Age Distribution
+plt.subplot(1, 2, 2)
+sns.kdeplot(data=dataset, x='Age (year)', hue='Gender', fill=True, common_norm=False, alpha=0.5, 
+            palette={'Male': 'blue', 'Female': 'orange'})
+#plt.title('Gender-based Age Distribution')
+plt.xlabel('Age (year)', fontsize=22)  # Set x-axis label size
+plt.ylabel('Density', fontsize=22)  # Set y-axis label size
+plt.tick_params(axis='both', which='major', labelsize=20)  # Increase tick label size
+
+plt.tight_layout()
+plt.savefig('Hb_PPG_distribution.png', dpi=600)
+plt.show()
